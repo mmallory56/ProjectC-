@@ -5,8 +5,9 @@ interface Props {
   closeForm: () => void;
   activity: Activity | undefined;
   createOrEdit: (activity: Activity) => void;
+  submitting: boolean;
 }
-const ActivityForm = ({closeForm,activity:selectedActivity,createOrEdit}:Props) => {
+const ActivityForm = ({closeForm,activity:selectedActivity,createOrEdit,submitting}:Props) => {
 
   const initialState = selectedActivity??{
     id:'',
@@ -51,9 +52,10 @@ function handleInputChange(event:ChangeEvent<HTMLInputElement |HTMLTextAreaEleme
             onChange={handleInputChange}
           />
           <Form.Input
+          type="Date"
             placeholder="Date"
             value={activity.date}
-            name="Date"
+            name="date"
             onChange={handleInputChange}
           />
           <Form.Input
@@ -68,7 +70,7 @@ function handleInputChange(event:ChangeEvent<HTMLInputElement |HTMLTextAreaEleme
             name="venue"
             onChange={handleInputChange}
           />
-          <Button floated="right" positive type="submit" content="Submit" />
+          <Button loading={submitting} floated="right" positive type="submit" content="Submit" />
           <Button
             floated="right"
             positive

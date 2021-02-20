@@ -8,6 +8,8 @@ import ActivityDashboard from "../../features/activities/dashboard/ActivityDashb
 
 import { v4 as uuidv4 } from "uuid";
 import { act } from "react-dom/test-utils";
+import agent from "../api/agent";
+import LoadingComponent from "./LoadingComponent";
 
 function App() {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -15,6 +17,8 @@ function App() {
     undefined
   );
   const [editMode, setEditMode] = useState(false);
+  const [loading, SetLoading] = useState(true);
+  const [submiting, setSubmiting] = useState(false);
 
   const handleSelectedActivity = (id: string) => {
     setSelectActivity(activities.find((x) => x.id === id));
@@ -30,27 +34,57 @@ function App() {
   const handleFormClose = () => {
     setEditMode(false);
   };
+
+  //Edit or Create Activity
   function handleCreateOrEditActivity(activity: Activity) {
-    activity.id
-      ? setActivities([
+    setSubmiting(true);
+    if (activity.id) {
+      agent.Activities.update(activity).then(() => {
+        setActivities([
           ...activities.filter((x) => x.id !== activity.id),
           activity,
-        ])
-      : setActivities([...activities, { ...activity, id: uuidv4() }]);
-    setEditMode(false);
-    setSelectActivity(activity);
+        ]);
+
+        setSelectActivity(activity);
+        setEditMode(false);
+        setSubmiting(false);
+      });
+    } else {
+      activity.id = uuidv4();
+
+      agent.Activities.create(activity).then(() => {
+        setActivities([...activities, activity]);
+        setSelectActivity(activity);
+        setEditMode(false);
+        setSubmiting(false);
+      });
+    }
   }
-  function handleDeleteActivity(id:string){
-    setActivities([...activities.filter(x=>x.id!==id)])
+
+  //Delete Activity
+  function handleDeleteActivity(id: string) {
+    setSubmiting(true);
+    agent.Activities.delete(id).then(()=>{
+       setActivities([...activities.filter((x) => x.id !== id)]);
+       setSubmiting(false)
+       
+    })
+   
   }
 
   useEffect(() => {
-    axios
-      .get<Activity[]>("https://localhost:5001/api/activities")
-      .then((response) => {
-        setActivities(response.data);
+    agent.Activities.list().then((response) => {
+      let activities: Activity[] = [];
+      response.forEach((activity) => {
+        activity.date = activity.date.split("T")[0];
+        activities.push(activity);
       });
+      setActivities(response);
+      SetLoading(false);
+    });
   }, []);
+  if (loading)
+    return <LoadingComponent inverted content="loading app"></LoadingComponent>;
   return (
     <>
       <NavBar handleOpenForm={handleFormOpen}></NavBar>
@@ -67,6 +101,7 @@ function App() {
           closeForm={handleFormClose}
           createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
+          submitting={submiting}
         />
       </Container>
     </>

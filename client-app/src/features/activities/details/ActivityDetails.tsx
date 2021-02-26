@@ -1,32 +1,44 @@
-import React from 'react'
-import { Button, Card, Image } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
+import { observer } from "mobx-react-lite";
+import React, { useEffect } from "react";
+import { NavLink, useParams } from "react-router-dom";
+import { Button, Card, Grid, Image } from "semantic-ui-react";
+import { useStore } from "../../../app/stores/store";
+import ActivityDetailChat from "./ActivityDetailedChat";
+import ActivityDetailedHeader from "./ActivityDetailedHeader";
+import ActivityDetailedInfo from "./ActivityDetailedInfo";
+import ActivityDetailedSideBar from "./ActivityDetailedSideBar";
 
-interface Props {
-  activity: Activity;
-  cancelSelectActivity: () => void;
-  openForm :(id:string)=>void;
+interface ParamStruc {
+  id: string;
 }
 
-const ActivityDetails = ({activity,cancelSelectActivity,openForm}:Props) => {
-    return (
-      <Card fluid>
-        <Image src={`./assets/categoryImages/${activity.category}.jpg`} />
-        <Card.Content>
-          <Card.Header>{activity.title}</Card.Header>
-          <Card.Meta>
-            <span className="date">{activity.date}</span>
-          </Card.Meta>
-          <Card.Description>{activity.description}</Card.Description>
-        </Card.Content>
-        <Card.Content extra>
-          <Button.Group>
-            <Button basic color="blue" content="Edit" onClick={()=>openForm(activity.id)}/>
-            <Button basic color="grey" content="Cancel" onClick={cancelSelectActivity} />
-          </Button.Group>
-        </Card.Content>
-      </Card>
-    );
-}
+const ActivityDetails = () => {
+  const params = useParams<ParamStruc>();
+  const { id } = params;
+  const { activityStore } = useStore();
+  const { selectedActivity: activity, loadActivity } = activityStore;
+  console.log(params);
+  useEffect(() => {
+    if (id) {
+      loadActivity(id);
+    }
 
-export default ActivityDetails
+    return () => {};
+  }, [params, loadActivity]);
+
+  if (!activity) return <></>;
+  return (
+    <Grid>
+      <Grid.Column width={10}>
+        <ActivityDetailedHeader activity={activity}></ActivityDetailedHeader>
+        <ActivityDetailedInfo activity={activity} />
+        <ActivityDetailChat />
+      </Grid.Column>
+      <Grid.Column width={6}>
+        <ActivityDetailedSideBar></ActivityDetailedSideBar>
+      </Grid.Column>
+    </Grid>
+  );
+};
+
+export default observer(ActivityDetails);

@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { observer } from "mobx-react-lite";
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -41,7 +42,7 @@ const ActivityListItem = ({ activity }: Props) => {
       <Segment>
         <span>
           <Icon name="clock"></Icon>
-          {activity.date}
+          {format( activity.date!,"dd MMM yyyy h:mm aa")}
           <Icon name="marker" />
           {activity.venue}
         </span>

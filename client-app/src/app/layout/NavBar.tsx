@@ -19,7 +19,8 @@ const NavBar = ({}:Props) => {
             />
             Reactivities
           </Menu.Item>
-          <Menu.Item as={NavLink} to="/activities" name="activities" />
+          <Menu.Item as={NavLink} to="/activities" name="Activities" />
+          <Menu.Item as={NavLink} to="/errors" name="Errors" />
           <Menu.Item>
             <Button
               positive

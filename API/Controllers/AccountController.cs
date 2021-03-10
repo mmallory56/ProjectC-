@@ -69,7 +69,7 @@ namespace API.Controllers
                 return CreateUserObject(user);
             }
 
-            return BadRequest("Nigger didn't register");
+            return BadRequest(" didn't register");
         }
         [Authorize]
         [HttpGet]

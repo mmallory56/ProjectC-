@@ -15,11 +15,31 @@ import TestErrors from "../../features/errors/TestError";
 import { ToastContainer } from "react-toastify";
 import NotFound from "../../features/errors/NotFound";
 import ServerError from "../../features/errors/ServerError";
+import LoginForm from "../../features/users/LoginForm";
+import ModalContainer from "../common/modals/ModalContainer";
 
 function App() {
   const location = useLocation();
+  const { commonStore, userStore } = useStore();
+
+useEffect(() => {
+  if(commonStore.token){
+    userStore.getUser().finally(()=>commonStore.setAppLoaded());
+
+  }else{
+    commonStore.setAppLoaded();
+  }
+  return () => {
+    
+  }
+}, [commonStore,userStore])
+
+
+if(!commonStore.appLoaded)return <LoadingComponent content="Loading App..."/>
+
   return (
     <>
+    <ModalContainer></ModalContainer>
       <ToastContainer position="bottom-right" hideProgressBar />
       <Route path="/" exact component={HomePage}></Route>
 
@@ -42,8 +62,8 @@ function App() {
               ></Route>
               <Route path="/errors" component={TestErrors}></Route>
               <Route path="/server-error" component={ServerError}></Route>
+              <Route path="/login" component={LoginForm}></Route>
               <Route component={NotFound} />
-              
             </Switch>
           </Container>
         </>

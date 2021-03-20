@@ -41,7 +41,7 @@ namespace Application.Activities
 
                 this.mapper.Map(request.Activity,activity);
                var result= await this.context.SaveChangesAsync()>0;
-                if(result)return Result<Unit>.Failure("Failed to Save Edit");
+                if(!result)return Result<Unit>.Failure("Failed to Save Edit");
                 return Result<Unit>.Success(Unit.Value);
             }
         }

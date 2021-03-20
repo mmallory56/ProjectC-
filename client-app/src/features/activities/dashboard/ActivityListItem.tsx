@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Button, Icon, Item, Label, Segment } from "semantic-ui-react";
 import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
+import ActivityListItemAttendee from "./ActivityListItemAttendee";
 interface Props {
   activity: Activity;
 }
@@ -23,6 +24,9 @@ const ActivityListItem = ({ activity }: Props) => {
   return (
     <Segment.Group>
       <Segment>
+        {activity.isCancelled&&(
+          <Label attached="top" color="red" content="Activity has been Canceled"style={{textAlign: "center",}} />
+        )}
         <Item.Group>
           <Item>
             <Item.Image
@@ -35,7 +39,21 @@ const ActivityListItem = ({ activity }: Props) => {
             <Item.Header as={Link} to={`/activities/${activity.id}`}>
               {activity.title}{" "}
             </Item.Header>
-            <Item.Description>Hosted by username</Item.Description>
+            <Item.Description>Hosted by {activity.host?.displayName}</Item.Description>
+            {activity.isHost&&(
+              <Item.Description>
+                <Label basic color="orange">
+                  Your Are hosting this activity
+                </Label>
+              </Item.Description>
+            )}
+            {activity.isGoing && !activity.isHost &&(
+              <Item.Description>
+                <Label basic color="green">
+                  Your are attending this activity
+                </Label>
+              </Item.Description>
+            )}
           </Item.Content>
         </Item.Group>
       </Segment>
@@ -48,7 +66,7 @@ const ActivityListItem = ({ activity }: Props) => {
         </span>
       </Segment>
       <Segment secondary>
-        Attendes go here
+       <ActivityListItemAttendee attendees={activity.attendees!}></ActivityListItemAttendee>
       </Segment>
       <Segment clearing>
         <span>{activity.description}</span>

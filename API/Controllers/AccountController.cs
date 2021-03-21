@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.DTOs;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -24,11 +25,12 @@ namespace API.Controllers
             this.signInManager = signInManager;
             this.userManager = userManager;
         }
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await this.userManager.FindByEmailAsync(loginDto.Email);
-
+            var user = await this.userManager.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.Email ==loginDto.Email);
+ 
             if (user == null) return Unauthorized();
 
             var result = await this.signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
@@ -76,7 +78,7 @@ namespace API.Controllers
 
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var user = await userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var user = await userManager.Users.Include(p => p.Photos).FirstOrDefaultAsync(x=> x.Email ==User.FindFirstValue(ClaimTypes.Email));
 
             return CreateUserObject(user);
         }
@@ -85,7 +87,7 @@ namespace API.Controllers
              return new UserDto
                 {
                     DisplayName = user.DisplayName,
-                    Image  = null,
+                    Image  = user?.Photos?.FirstOrDefault(x => x.IsMain)?.Url,
                     Username = user.UserName,
                     Token = tokenService.CreateToken(user)
                 

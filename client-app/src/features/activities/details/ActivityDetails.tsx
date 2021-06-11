@@ -16,14 +16,20 @@ const ActivityDetails = () => {
   const params = useParams<ParamStruc>();
   const { id } = params;
   const { activityStore } = useStore();
-  const { selectedActivity: activity, loadActivity } = activityStore;
+  const {
+    selectedActivity: activity,
+    loadActivity,
+    clearSelectedActivity,
+  } = activityStore;
   console.log(params);
   useEffect(() => {
     if (id) {
       loadActivity(id);
     }
 
-    return () => {};
+    return () => {
+      clearSelectedActivity();
+    };
   }, [params, loadActivity]);
 
   if (!activity) return <></>;
@@ -32,7 +38,7 @@ const ActivityDetails = () => {
       <Grid.Column width={10}>
         <ActivityDetailedHeader activity={activity}></ActivityDetailedHeader>
         <ActivityDetailedInfo activity={activity} />
-        <ActivityDetailChat />
+        <ActivityDetailChat activityId={activity.id} />
       </Grid.Column>
       <Grid.Column width={6}>
         <ActivityDetailedSideBar activity={activity}></ActivityDetailedSideBar>

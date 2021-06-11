@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 using Application.Activities;
 using Application.Core;
 using FluentValidation.AspNetCore;
@@ -69,6 +70,8 @@ namespace API
             // app.UseHttpsRedirection();
            
             app.UseRouting();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseCors("CorsPolicy");
              app.UseAuthentication();
             app.UseAuthorization();
@@ -76,6 +79,8 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapFallbackToController("Index","Fallback");
             });
         }
     }

@@ -36,10 +36,10 @@ const ActivityListItem = ({ activity }: Props) => {
             ></Item.Image>
           </Item>
           <Item.Content>
-            <Item.Header as={Link} to={`/activities/${activity.id}`}>
+            <Item.Header as={Link} to={activity.host?.image||`/activities/${activity.id}`}>
               {activity.title}{" "}
             </Item.Header>
-            <Item.Description>Hosted by {activity.host?.displayName}</Item.Description>
+            <Item.Description>Hosted by <Link to={`/profile/${activity.host?.username}`} >{activity.host?.displayName}</Link></Item.Description>
             {activity.isHost&&(
               <Item.Description>
                 <Label basic color="orange">

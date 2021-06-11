@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { history } from "../..";
 import agent from "../api/agent";
+import { Photo } from "../models/profile";
 import { User, UserFormValues } from "../models/user";
 import ModalStore from "./modalStore";
 import { store } from "./store";
@@ -51,4 +52,10 @@ export default class UserStore {
       throw error;
     }
   };
+  setImage = (image:string)=>{
+    if(this.user){
+      this.user.image=image;
+    }
+    
+  }
 }
